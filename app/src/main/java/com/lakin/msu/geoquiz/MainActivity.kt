@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         trueButton.setOnClickListener{
             val snackBar = Snackbar.make(
                 it,
-                "Correct",
+                R.string.correct_toast,
                 Snackbar.LENGTH_SHORT
             )
             snackBar.show()
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         falseButton.setOnClickListener{
             val snackBar = Snackbar.make(
                 it,
-                "Incorrect",
+                R.string.incorrect_toast,
                 Snackbar.LENGTH_SHORT
             )
             snackBar.setTextColor(Color.BLACK)
