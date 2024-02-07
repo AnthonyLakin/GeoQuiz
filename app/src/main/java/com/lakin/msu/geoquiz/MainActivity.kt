@@ -7,45 +7,31 @@ import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
+import com.lakin.msu.geoquiz.databinding.ActivityMainBinding
+
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+//    private lateinit var trueButton : Button
+//    private lateinit var falseButton : Button
 
-    private lateinit var trueButton : Button
-    private lateinit var falseButton : Button
-
-/*    private val questionBank = listOf(
+    private val questionBank = listOf(
         Question(R.string.question_australia, true),
-        Question("The Pacific Ocean is larger than the Atlantic Ocean.", true),
-        Question("The Suez Canal connects the Red Sea and the Indian Ocean.", false),
-        Question("The source of the Nile River is in Egypt.", true),
-        Question("The Amazon River is the longest river in the Americas", true),
+        Question(R.string.question_oceans, true),
+        Question(R.string.question_mideast, false),
+        Question(R.string.question_africa, false),
+        Question(R.string.question_americas, true),
+        Question(R.string.question_asia, true)
+    )
 
-    )*/
+    private var currentIndex = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        trueButton = findViewById(R.id.true_button)
-        falseButton = findViewById(R.id.false_button)
-
-        /*trueButton.setOnClickListener{view: View ->
-            Toast.makeText(
-                this,
-                R.string.true_button,
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-
-        falseButton.setOnClickListener{view: View ->
-            Toast.makeText(
-                this,
-                R.string.false_button,
-                Toast.LENGTH_SHORT
-            ).show()
-        }*/
-
-        trueButton.setOnClickListener{
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        binding.trueButton.setOnClickListener {
             val snackBar = Snackbar.make(
                 it,
                 R.string.correct_toast,
@@ -54,7 +40,7 @@ class MainActivity : AppCompatActivity() {
             snackBar.show()
         }
 
-        falseButton.setOnClickListener{
+        binding.falseButton.setOnClickListener {
             val snackBar = Snackbar.make(
                 it,
                 R.string.incorrect_toast,
@@ -64,5 +50,12 @@ class MainActivity : AppCompatActivity() {
             snackBar.setBackgroundTint(Color.RED)
             snackBar.show()
         }
+        binding.nextButton.setOnClickListener {
+            currentIndex = (currentIndex + 1) % questionBank.size
+            val questionTextResId = questionBank[currentIndex].textResId
+            binding.questionTextview.setText(questionTextResId)
+        }
+        val questionTextResId = questionBank[currentIndex].textResId
+        binding.questionTextview.setText(questionTextResId)
     }
 }
