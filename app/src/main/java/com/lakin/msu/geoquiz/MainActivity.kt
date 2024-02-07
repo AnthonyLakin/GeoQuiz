@@ -34,10 +34,25 @@ class MainActivity : AppCompatActivity() {
             checkAnswer(false)
         }
         binding.nextButton.setOnClickListener {
-            currentIndex = (currentIndex + 1) % questionBank.size
-            updateQuestion()
+            questionHandler("next")
+        }
+//        Exercise 2 snippet below
+        binding.questionTextview.setOnClickListener {
+            questionHandler("next")
         }
 
+    }
+
+    //    Exercise 2 snippet below
+    private fun questionHandler(typeState: String) {
+        if (typeState == "next") {
+            currentIndex = (currentIndex + 1) % questionBank.size
+            
+        } else if (typeState == "back") {
+            currentIndex = (currentIndex + 1) % questionBank.size
+
+        }
+        updateQuestion()
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
