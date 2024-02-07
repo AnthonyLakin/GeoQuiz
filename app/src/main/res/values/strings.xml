@@ -5,4 +5,6 @@
     <string name="false_button">False</string>
     <string name="correct_toast">Correct!</string>
     <string name="incorrect_toast">incorrect!</string>
+    <string name="question_australia">Canberra is the capital of Australia.</string>
+    <string name="next_button">Next</string>
 </resources>
