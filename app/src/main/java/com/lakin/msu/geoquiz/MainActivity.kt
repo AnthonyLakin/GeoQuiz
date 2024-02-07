@@ -3,17 +3,12 @@ package com.lakin.msu.geoquiz
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
 import android.widget.Toast
-import com.google.android.material.snackbar.Snackbar
 import com.lakin.msu.geoquiz.databinding.ActivityMainBinding
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-//    private lateinit var trueButton : Button
-//    private lateinit var falseButton : Button
 
     private val questionBank = listOf(
         Question(R.string.question_australia, true),
@@ -32,29 +27,31 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.trueButton.setOnClickListener {
-            val snackBar = Snackbar.make(
-                it,
-                R.string.correct_toast,
-                Snackbar.LENGTH_SHORT
-            )
-            snackBar.show()
+            checkAnswer(true)
         }
 
         binding.falseButton.setOnClickListener {
-            val snackBar = Snackbar.make(
-                it,
-                R.string.incorrect_toast,
-                Snackbar.LENGTH_SHORT
-            )
-            snackBar.setTextColor(Color.BLACK)
-            snackBar.setBackgroundTint(Color.RED)
-            snackBar.show()
+            checkAnswer(false)
         }
         binding.nextButton.setOnClickListener {
             currentIndex = (currentIndex + 1) % questionBank.size
-            val questionTextResId = questionBank[currentIndex].textResId
-            binding.questionTextview.setText(questionTextResId)
+            updateQuestion()
         }
+
+    }
+
+    private fun checkAnswer(userAnswer: Boolean) {
+        val correctAnswer = questionBank[currentIndex].answer
+
+        val messageResId = if (userAnswer == correctAnswer) {
+            R.string.correct_toast
+        } else {
+            R.string.incorrect_toast
+        }
+        Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun updateQuestion() {
         val questionTextResId = questionBank[currentIndex].textResId
         binding.questionTextview.setText(questionTextResId)
     }
