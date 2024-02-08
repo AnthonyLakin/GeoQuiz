@@ -33,23 +33,29 @@ class MainActivity : AppCompatActivity() {
         binding.falseButton.setOnClickListener {
             checkAnswer(false)
         }
-        binding.nextButton.setOnClickListener {
-            questionHandler("next")
-        }
-//        Exercise 2 snippet below
+        //        Exercise 2 snippet below, clicking on text view advances questions
         binding.questionTextview.setOnClickListener {
             questionHandler("next")
         }
+        binding.nextButton.setOnClickListener {
+            questionHandler("next")
+        }
+        //    Exercise 3 snippet below, added previous functionality
+        binding.prevButton.setOnClickListener {
+            questionHandler("prev")
+        }
+
 
     }
 
-    //    Exercise 2 snippet below
+    //    Exercise 2 snippet below, clicking on text view advances questions
     private fun questionHandler(typeState: String) {
         if (typeState == "next") {
             currentIndex = (currentIndex + 1) % questionBank.size
-            
-        } else if (typeState == "back") {
-            currentIndex = (currentIndex + 1) % questionBank.size
+
+            //    Exercise 3 snippet below, added previous functionality
+        } else if (typeState == "prev") {
+            currentIndex = (currentIndex - 1) % questionBank.size
 
         }
         updateQuestion()
