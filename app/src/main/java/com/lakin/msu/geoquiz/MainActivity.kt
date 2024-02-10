@@ -55,7 +55,10 @@ class MainActivity : AppCompatActivity() {
 
             //    Exercise 3 snippet below, added previous functionality
         } else if (typeState == "prev") {
-            currentIndex = (currentIndex - 1) % questionBank.size
+            if (currentIndex != 0 ) {
+                currentIndex = (currentIndex - 1) % questionBank.size
+            }
+
 
         }
         updateQuestion()
