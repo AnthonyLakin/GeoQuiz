@@ -1,6 +1,5 @@
 package com.lakin.msu.geoquiz
 
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -116,7 +115,7 @@ class MainActivity : AppCompatActivity() {
             binding.trueButton.isEnabled = true
             binding.falseButton.isEnabled = true
             currentIndex = 0
-            history = mutableSetOf<Int>()
+            history = mutableSetOf()
             numerator = 0
             denominator = 0
             updateQuestion()
