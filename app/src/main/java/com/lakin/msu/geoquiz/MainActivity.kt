@@ -22,13 +22,13 @@ class MainActivity : AppCompatActivity() {
     )
 
     private var currentIndex = 0
-    private var history = mutableSetOf<Int>(0)
+    private var history = mutableSetOf<Int>()
     private var numerator = 0
     private var denominator = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        Log.d(TAG, "onCreate (Bundle?) called")
+        Log.v(TAG, "onCreate (Bundle?) called")
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.trueButton.setOnClickListener {
@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
             questionHandler(false)
         }
         binding.resetButton.setOnClickListener {
-            resetAll(false)
+            resetAll(true)
         }
 
 
@@ -80,6 +80,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
+        history.add(currentIndex)
             val correctAnswer = questionBank[currentIndex].answer
             val messageResId = if (userAnswer == correctAnswer) {
                 R.string.correct_toast
@@ -97,10 +98,10 @@ class MainActivity : AppCompatActivity() {
             val formattedResult = String.format("%.1f%%", result)
             Toast.makeText(this, formattedResult, Toast.LENGTH_SHORT).show()
             Log.d(TAG, formattedResult)
-            resetAll(true)
+            resetAll(false)
         }
 
-        history.add(currentIndex)
+
     }
 
     private fun updateQuestion() {
@@ -115,9 +116,10 @@ class MainActivity : AppCompatActivity() {
             binding.trueButton.isEnabled = true
             binding.falseButton.isEnabled = true
             currentIndex = 0
-            history = mutableSetOf<Int>(0)
+            history = mutableSetOf<Int>()
             numerator = 0
             denominator = 0
+            updateQuestion()
         } else {
             binding.resetButton.visibility = View.VISIBLE
             binding.resetButton.isEnabled = true
@@ -128,24 +130,24 @@ class MainActivity : AppCompatActivity() {
 
 
 
-/*    override fun onStart() {
+    override fun onStart() {
         super.onStart()
-        Log.d(TAG, "onStart() called")
+        Log.v(TAG, "onStart() called")
     }
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume() called")
+        Log.v(TAG, "onResume() called")
     }
     override fun onPause() {
         super.onPause()
-        Log.d(TAG, "onPause() called")
+        Log.v(TAG, "onPause() called")
     }
     override fun onStop() {
         super.onStop()
-        Log.d(TAG, "onStop() called")
+        Log.v(TAG, "onStop() called")
     }
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy() called")
-    }*/
+        Log.v(TAG, "onDestroy() called")
+    }
 }
