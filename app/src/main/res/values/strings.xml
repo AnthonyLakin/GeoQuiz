@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">03_Activity_Lifecycle</string>
+    <string name="app_name">04_Persisting_UI_State</string>
     <string name="reset_button">Reset</string>
     <string name="true_button">True</string>
     <string name="false_button">False</string>

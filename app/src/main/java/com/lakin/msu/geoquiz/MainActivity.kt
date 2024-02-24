@@ -5,31 +5,26 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import com.lakin.msu.geoquiz.databinding.ActivityMainBinding
 
 private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private val quizViewModel:QuizViewModel by viewModels()
+    private val currentIndex = quizViewModel.getCurrentIndex
+    private val history = quizViewModel.getHistory
+    private val questionBank = quizViewModel.getQuestionBank
+    private val numerator = quizViewModel.getNumerator
+    private val denominator = quizViewModel.getDenominator
 
-    private val questionBank = listOf(
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_mideast, false),
-        Question(R.string.question_africa, false),
-        Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true)
-    )
-
-    private var currentIndex = 0
-    private var history = mutableSetOf<Int>()
-    private var numerator = 0
-    private var denominator = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.v(TAG, "onCreate (Bundle?) called")
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        Log.v(TAG, "Got a QuizViewModel: $quizViewModel")
         binding.trueButton.setOnClickListener {
             checkAnswer(true)
         }
@@ -56,15 +51,15 @@ class MainActivity : AppCompatActivity() {
     private fun questionHandler(typeBool: Boolean) {
         if (typeBool) {
             if (currentIndex != (questionBank.size - 1)) {
-                currentIndex++
+                quizViewModel.currentIndexHandler(0)
             } else {
-                currentIndex = (questionBank.size - 1)
+                quizViewModel.currentIndexHandler(1)
             }
         } else  {
             if (currentIndex != 0) {
-                currentIndex--
+                quizViewModel.currentIndexHandler(1)
             } else {
-                currentIndex = 0
+                quizViewModel.currentIndexHandler(2)
             }
         }
         updateQuestion()
@@ -78,8 +73,27 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun updateQuestion() {
+
+        if (currentIndex in history) {
+            binding.trueButton.isEnabled = false
+            binding.falseButton.isEnabled = false
+        } else {
+            binding.trueButton.isEnabled = true
+            binding.falseButton.isEnabled = true
+        }
+        val questionTextResId = questionBank[currentIndex].textResId
+        binding.questionTextview.setText(questionTextResId)
+    }
+
+    private fun buttonState(buttonBool: Boolean) {
+        binding.trueButton.isEnabled = buttonBool
+        binding.falseButton.isEnabled = buttonBool
+    }
+
     private fun checkAnswer(userAnswer: Boolean) {
-        history.add(currentIndex)
+        val currentIndex = quizViewModel.getCurrentIndex
+        quizViewModel.addToHistory(currentIndex)
             val correctAnswer = questionBank[currentIndex].answer
             val messageResId = if (userAnswer == correctAnswer) {
                 R.string.correct_toast
@@ -87,10 +101,11 @@ class MainActivity : AppCompatActivity() {
                 R.string.incorrect_toast
             }
             Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
-            denominator++
+
+        quizViewModel.percentHandler("bottom")
             questionHandler(true)
             if (messageResId == R.string.correct_toast) {
-                numerator++
+                quizViewModel.percentHandler("top")
             }
         if (denominator == questionBank.size) {
             val result = (numerator.toDouble() / denominator) * 100
@@ -103,10 +118,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun updateQuestion() {
-        val questionTextResId = questionBank[currentIndex].textResId
-        binding.questionTextview.setText(questionTextResId)
-    }
+
 
     private fun resetAll(currentState: Boolean) {
         if (currentState) {
@@ -114,10 +126,7 @@ class MainActivity : AppCompatActivity() {
             binding.resetButton.isEnabled = false
             binding.trueButton.isEnabled = true
             binding.falseButton.isEnabled = true
-            currentIndex = 0
-            history = mutableSetOf()
-            numerator = 0
-            denominator = 0
+            quizViewModel.resetVars()
             updateQuestion()
         } else {
             binding.resetButton.visibility = View.VISIBLE
@@ -127,26 +136,4 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
-
-    override fun onStart() {
-        super.onStart()
-        Log.v(TAG, "onStart() called")
-    }
-    override fun onResume() {
-        super.onResume()
-        Log.v(TAG, "onResume() called")
-    }
-    override fun onPause() {
-        super.onPause()
-        Log.v(TAG, "onPause() called")
-    }
-    override fun onStop() {
-        super.onStop()
-        Log.v(TAG, "onStop() called")
-    }
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.v(TAG, "onDestroy() called")
-    }
 }
