@@ -1,6 +1,5 @@
 package com.lakin.msu.geoquiz
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 private  const val TAG = "QuizViewModel"
 class QuizViewModel:ViewModel() {
@@ -47,16 +46,19 @@ class QuizViewModel:ViewModel() {
         }
     }
 
-    fun currentIndexHandler(stage: Int) {
+    fun currentIndexHandler(stage: String) {
         when (stage) {
-            0 -> {
+            "next" -> {
                 currentIndex++
             }
-            1 -> {
+            "back" -> {
                 currentIndex--
             }
-            2 -> {
+            "min" -> {
                 currentIndex = 0
+            }
+            "max" -> {
+                currentIndex = (questionBank.size - 1)
             }
         }
     }

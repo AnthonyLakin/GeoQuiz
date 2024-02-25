@@ -12,22 +12,16 @@ private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val quizViewModel:QuizViewModel by viewModels()
-    private val currentIndex = quizViewModel.getCurrentIndex
-    private val history = quizViewModel.getHistory
-    private val questionBank = quizViewModel.getQuestionBank
-    private val numerator = quizViewModel.getNumerator
-    private val denominator = quizViewModel.getDenominator
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.v(TAG, "onCreate (Bundle?) called")
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        Log.v(TAG, "Got a QuizViewModel: $quizViewModel")
         binding.trueButton.setOnClickListener {
             checkAnswer(true)
         }
+        updateQuestion()
 
         binding.falseButton.setOnClickListener {
             checkAnswer(false)
@@ -49,20 +43,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun questionHandler(typeBool: Boolean) {
+        //Retrieved values from QuizViewModel
+        var currentIndex = quizViewModel.getCurrentIndex
+        val questionBank = quizViewModel.getQuestionBank
+
+
         if (typeBool) {
             if (currentIndex != (questionBank.size - 1)) {
-                quizViewModel.currentIndexHandler(0)
+                quizViewModel.currentIndexHandler("next")
             } else {
-                quizViewModel.currentIndexHandler(1)
+                quizViewModel.currentIndexHandler("max")
             }
         } else  {
             if (currentIndex != 0) {
-                quizViewModel.currentIndexHandler(1)
+                quizViewModel.currentIndexHandler("back")
             } else {
-                quizViewModel.currentIndexHandler(2)
+                quizViewModel.currentIndexHandler("min")
             }
         }
+
         updateQuestion()
+        currentIndex = quizViewModel.getCurrentIndex
+        val history: MutableSet<Int> = quizViewModel.getHistory
         if (currentIndex in history) {
             binding.trueButton.isEnabled = false
             binding.falseButton.isEnabled = false
@@ -74,6 +76,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateQuestion() {
+        //Retrieved values from QuizViewModel
+        val currentIndex = quizViewModel.getCurrentIndex
+        val questionBank = quizViewModel.getQuestionBank
+        val history = quizViewModel.getHistory
 
         if (currentIndex in history) {
             binding.trueButton.isEnabled = false
@@ -86,13 +92,12 @@ class MainActivity : AppCompatActivity() {
         binding.questionTextview.setText(questionTextResId)
     }
 
-    private fun buttonState(buttonBool: Boolean) {
-        binding.trueButton.isEnabled = buttonBool
-        binding.falseButton.isEnabled = buttonBool
-    }
 
     private fun checkAnswer(userAnswer: Boolean) {
+        //Retrieved values from QuizViewModel
         val currentIndex = quizViewModel.getCurrentIndex
+        val questionBank = quizViewModel.getQuestionBank
+
         quizViewModel.addToHistory(currentIndex)
             val correctAnswer = questionBank[currentIndex].answer
             val messageResId = if (userAnswer == correctAnswer) {
@@ -101,12 +106,15 @@ class MainActivity : AppCompatActivity() {
                 R.string.incorrect_toast
             }
             Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
-
         quizViewModel.percentHandler("bottom")
             questionHandler(true)
             if (messageResId == R.string.correct_toast) {
                 quizViewModel.percentHandler("top")
             }
+
+        //Declared fraction components. retrieved value from QuizViewModel
+        val denominator: Int = quizViewModel.getDenominator
+        val numerator: Int = quizViewModel.getNumerator
         if (denominator == questionBank.size) {
             val result = (numerator.toDouble() / denominator) * 100
             val formattedResult = String.format("%.1f%%", result)
