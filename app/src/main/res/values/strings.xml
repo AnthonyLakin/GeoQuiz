@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">04_Persisting_UI_State</string>
+    <string name="app_name">05_Second_Activity</string>
     <string name="reset_button">Reset</string>
     <string name="true_button">True</string>
     <string name="false_button">False</string>
@@ -13,5 +13,8 @@
     <string name="question_africa">The source of the Nile River is in Egypt.</string>
     <string name="question_americas">The Amazon River is the longest river in the Americas.</string>
     <string name="question_asia">Lake Baikal is the world\'s oldest and deepest freshwater lake.</string>
-
+    <string name="confirm_message">Are you sure you want to do this?</string>
+    <string name="answer_output">Show Answer</string>
+    <string name="cheat_text">Cheat!</string>
+    <string name="judgment_toast">Cheating is wrong!</string>
 </resources>

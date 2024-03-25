@@ -1,23 +1,55 @@
 package com.lakin.msu.geoquiz
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.lakin.msu.geoquiz.databinding.ActivityMainBinding
 
 private const val TAG = "MainActivity"
+const val EXTRA_ANSWER_SHOWN = "com.lakin.msu.geoquiz.answer_shown"
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val quizViewModel:QuizViewModel by viewModels()
 
+    // In android Activity class get the results of the 2nd activity
+    private val cheatLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    )
+
+    // This is a lambda that is invoked when the 2nd activity is done and returns a result
+    {
+        // If conditional statement is true call cheatingHandler within the quizViewModel class
+        result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val answerShown = result.data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false)
+            Log.v(TAG, "Received answerShown: $answerShown")
+            quizViewModel.cheatingHandler(answerShown ?: false)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // When cheatButton is pressed it creates the 2nd activity
+        binding.cheatButton.setOnClickListener{
+
+            // This is the value of the current question bank answer
+            val currentQuestionAnswer = quizViewModel.getQuestionBank[quizViewModel.getCurrentIndex].answer
+
+            // instantiates Intent object and passes the current question Boolean value
+            val intent = CheatActivity.newIntent(this@MainActivity, currentQuestionAnswer)
+
+            // starts and launches Intent object
+            cheatLauncher.launch(intent)
+        }
         binding.trueButton.setOnClickListener {
             checkAnswer(true)
         }
@@ -43,7 +75,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun questionHandler(typeBool: Boolean) {
-        //Retrieved values from QuizViewModel
         var currentIndex = quizViewModel.getCurrentIndex
         val questionBank = quizViewModel.getQuestionBank
 
@@ -76,7 +107,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateQuestion() {
-        //Retrieved values from QuizViewModel
         val currentIndex = quizViewModel.getCurrentIndex
         val questionBank = quizViewModel.getQuestionBank
         val history = quizViewModel.getHistory
@@ -94,25 +124,32 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun checkAnswer(userAnswer: Boolean) {
-        //Retrieved values from QuizViewModel
         val currentIndex = quizViewModel.getCurrentIndex
         val questionBank = quizViewModel.getQuestionBank
 
         quizViewModel.addToHistory(currentIndex)
             val correctAnswer = questionBank[currentIndex].answer
-            val messageResId = if (userAnswer == correctAnswer) {
+            /*val messageResId = if (userAnswer == correctAnswer) {
                 R.string.correct_toast
             } else {
                 R.string.incorrect_toast
-            }
+            }*/
+
+        // Replaced commented code with this
+        // This code uses a switch statement to check the boolean value if the user cheated
+        val messageResId = when {
+            quizViewModel.getIsCheater -> R.string.judgment_toast
+            userAnswer == correctAnswer -> R.string.correct_toast
+            else -> R.string.incorrect_toast
+        }
             Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
         quizViewModel.percentHandler("bottom")
-            questionHandler(true)
+            //questionHandler(true)
+            updateQuestion()
             if (messageResId == R.string.correct_toast) {
                 quizViewModel.percentHandler("top")
             }
 
-        //Declared fraction components. retrieved value from QuizViewModel
         val denominator: Int = quizViewModel.getDenominator
         val numerator: Int = quizViewModel.getNumerator
         if (denominator == questionBank.size) {

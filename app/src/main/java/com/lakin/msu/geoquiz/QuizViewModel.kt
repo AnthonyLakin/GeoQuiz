@@ -18,6 +18,9 @@ class QuizViewModel:ViewModel() {
     private var numerator = 0
     private var denominator = 0
 
+    //Week 7 - stores your cheating state
+    private var isCheater = false
+
 
     val getQuestionBank: List<Question>
         get() = questionBank
@@ -31,8 +34,13 @@ class QuizViewModel:ViewModel() {
         get() = numerator
     val getDenominator: Int
         get() = denominator
+    val getIsCheater: Boolean
+        get() = isCheater
 
-
+    // This will handle the state if someone cheated
+    fun cheatingHandler(state: Boolean) {
+        isCheater = state
+    }
 
     fun percentHandler(type: String) {
         when (type) {
@@ -67,6 +75,10 @@ class QuizViewModel:ViewModel() {
 
     fun addToHistory(index: Int) {
         history.add(index)
+    }
+
+    fun cheatingHistory(state: Boolean) {
+            isCheater = state
     }
 
     fun resetVars() {
