@@ -15,6 +15,7 @@ class QuizViewModel:ViewModel() {
 
     private var currentIndex = 0
     private var history = mutableSetOf<Int>()
+    private var cheatHistory = booleanArrayOf(false, false, false, false, false, false)
     private var numerator = 0
     private var denominator = 0
 
@@ -36,6 +37,13 @@ class QuizViewModel:ViewModel() {
         get() = denominator
     val getIsCheater: Boolean
         get() = isCheater
+
+    val getCheatHistory: BooleanArray
+        get() = cheatHistory
+
+    fun cheatHistoryHandler(index: Int, state: Boolean) {
+        cheatHistory[index] = state
+    }
 
     // This will handle the state if someone cheated
     fun cheatingHandler(state: Boolean) {

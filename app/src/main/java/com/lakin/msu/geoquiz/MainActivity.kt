@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.lakin.msu.geoquiz.databinding.ActivityMainBinding
+import java.util.Arrays
 
 private const val TAG = "MainActivity"
 const val EXTRA_ANSWER_SHOWN = "com.lakin.msu.geoquiz.answer_shown"
@@ -30,6 +31,7 @@ class MainActivity : AppCompatActivity() {
             val answerShown = result.data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false)
             Log.v(TAG, "Received answerShown: $answerShown")
             quizViewModel.cheatingHandler(answerShown ?: false)
+            quizViewModel.cheatHistoryHandler(quizViewModel.getCurrentIndex, answerShown ?: false)
         }
     }
 
@@ -93,15 +95,21 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        if (quizViewModel.getCheatHistory[quizViewModel.getCurrentIndex]) {
+            Toast.makeText(this, R.string.judgment_toast, Toast.LENGTH_SHORT).show()
+        }
+
         updateQuestion()
         currentIndex = quizViewModel.getCurrentIndex
         val history: MutableSet<Int> = quizViewModel.getHistory
         if (currentIndex in history) {
             binding.trueButton.isEnabled = false
             binding.falseButton.isEnabled = false
+            binding.cheatButton.isEnabled = false
         } else {
             binding.trueButton.isEnabled = true
             binding.falseButton.isEnabled = true
+            binding.cheatButton.isEnabled = true
         }
 
     }
@@ -111,12 +119,16 @@ class MainActivity : AppCompatActivity() {
         val questionBank = quizViewModel.getQuestionBank
         val history = quizViewModel.getHistory
 
+
+
         if (currentIndex in history) {
             binding.trueButton.isEnabled = false
             binding.falseButton.isEnabled = false
+            binding.cheatButton.isEnabled = false
         } else {
             binding.trueButton.isEnabled = true
             binding.falseButton.isEnabled = true
+            binding.cheatButton.isEnabled = true
         }
         val questionTextResId = questionBank[currentIndex].textResId
         binding.questionTextview.setText(questionTextResId)
@@ -171,6 +183,7 @@ class MainActivity : AppCompatActivity() {
             binding.resetButton.isEnabled = false
             binding.trueButton.isEnabled = true
             binding.falseButton.isEnabled = true
+            binding.cheatButton.isEnabled = true
             quizViewModel.resetVars()
             updateQuestion()
         } else {
